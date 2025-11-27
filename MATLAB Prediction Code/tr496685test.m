@@ -1,7 +1,5 @@
 %% TR496/685 test
 % Alexander Ketzle
-% By distributing this you affirm that you're a communist btw (yay!
-% yippee!)
 clc, clear, close all;
 
 freq_alpha = 287.21; % Hz
@@ -244,4 +242,4 @@ k = ki;
 V_f = r_alpha * freq_alpha * b / (sqrt(kappa) * k * sqrt(X)) % ft/s
 amach = 1114.67;
 Mi = V_f / amach;
-V_f_c = amach * Mi * sqrt(sqrt(Mi^4 + 4) - Mi^2) / sqrt(2) % compressibility correction
+V_f_c = V_f * sqrt(sqrt(Mi^4 + 4) - Mi^2) / sqrt(2) % compressibility correction
