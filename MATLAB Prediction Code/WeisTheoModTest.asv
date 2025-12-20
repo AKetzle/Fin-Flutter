@@ -3,13 +3,25 @@
 % Long Suffering
 clc, clear, close all;
 
+% TN685 parameters - should converge near 831.6 ft/s and k = 0.406
+% a = -0.4;
+% b = 6; % ft
+% x_thetabar = 0.2;
+% r_thetabar = sqrt(0.25);
+% freq_theta = 90; % rad/s
+% freq_h = freq_theta / 4; % rad/s
+% mu = 0.25;
+
+% Weisshaar parameters - should converge near
 a = -0.2;
 b = 3; % ft
 x_thetabar = 0.1;
 r_thetabar = 0.5;
-freq_h = 10; % rad/s
 freq_theta = 25; % rad/s
+freq_h = 10; % rad/s
 mu = 20;
+
+
 i = sqrt(-1);
 
 
@@ -40,68 +52,56 @@ omega = eig(fluttermatrix);
 
 %% New Solver Attempt
 
-% set up conditions
-vel_range = [10,300]; % ft/s
-initial_k = 0.001;
-stepLimiter = 0.5; % scaling factor to reduce how much value difference comes into play in solver
-iterations = 10;
-convergence = 1e-6;
 
-% initialize the function
-k0 = initial_k; % initial guess value for reduced frequency
-V0 = vel_range(1); % velocity parameter to step through
-initial_freq = initial_k * V0 / b; % calculate the initial unreduced frequency from the guess
-freq_0 = freq_theta / sqrt(subs(real(omega(1)),k,k0)); % calculate the unreduced frequency at the given conditions
-k1 = freq_0 * b / V0; % calculate the new reduced frequency from the given parameters
-w = k1 - k0; % calculate step size
-k2 = k0 + (stepLimiter * w); % calculate next parameter value to plug
+
+
+% k0 = initial_k; % initial guess value for reduced frequency
+% V0 = vel_range(1); % velocity parameter to step through
+% initial_freq = initial_k * V0 / b; % calculate the initial unreduced frequency from the guess
+% freq_0 = freq_theta / sqrt(subs(real(omega(1)),k,k0)); % calculate the unreduced frequency at the given conditions
+% k1 = freq_0 * b / V0; % calculate the new reduced frequency from the given parameters
+% w = k1 - k0; % calculate step size
+% k2 = k0 + (stepLimiter * w); % calculate next parameter value to plug
 % this is where it repeats
 
-k = initial_k;
-V = V0;
+% set up conditions
 
-for iter = 1:iterations
-    iter;
-    eigen = subs(omega);
-    freq_f = freq_theta / sqrt(real(eigen(1)));
-    k1 = freq_f * b / V;
-    w = k1 - k;
-    
+velStepSize = 1; % ft/s per step
+vel_range = [75,300]; % ft/s, range of values to test
+n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
+testVels = linspace(vel_range(1), vel_range(2), n);
+solutionMatrix = zeros([4,size(testVels,2)]); % each column corresponds to a test velocity
+
+
+initial_k = 1;
+stepLimiter = 0.5; % scaling factor to reduce how much value difference comes into play in solver
+iterations = 100;
+convergence = 0.0001;
+
+% initialize the function
+
+for velStep = 1:n
+    V = testVels(velStep);
+    k = initial_k;
+    % THIS IS NOT CONVERGING RIGHT, IT'S JUST GETTING CLOSE TO THE TEST
+    % VELOCITY
+    for iter = 1:iterations
+        eigen = subs(omega); % calculate function
+        freq_f = freq_theta / sqrt(real(eigen(1))); % extract necessary component from function
+        k1 = double(freq_f * b / V); % calculate new value
+        w = k1 - k; % calculate residual
+        if abs(w) > convergence && iter < iterations
+            k = k + (stepLimiter * w); % produce next value to test
+        else
+            fprintf("Calculation Complete in %d iterations\n",iter);
+            V_f = freq_f * b / k;
+            fprintf("For V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",V,k,V_f);
+            solutionMatrix(:,velStep) = [k,V_f,eigen(1),eigen(2)].';
+            break;
+        end
+    end
 end
 
-%% N-R
-% k = 0.1844;
-% dk = 0.001;
-%for iter = 1:iterations
-    %iter;
-    % f = subs(imag(omega(1)))
-    % k = k + dk
-    % df = (imag(subs(omega(1))) - f) / dk
-    % k = k - dk
-    % term2 = (f / df)
-    % k1 = k - term2
-    % fprintf("===========\n k = %g\n i = %g\n f = %g\ndf = %g\nt2 = %g\nk1 = %g\n",k,0,f,df,term2,k1);
-%     if(k1 == k)
-%         break
-%     else
-%         k = k1;
-%     end
-% end
-% subs(omega)
-% 
-% freqratio = subs(1 ./ sqrt(real(omega)))
-% eigratio = subs(imag(omega(:,1)) ./ real(omega))
-% V_f = subs(freq_theta * b ./ (k * sqrt(real(omega)))) % for the givens, flutter should be 166.1 ft/s and divergence 216 ft/s
-%scatter(V_f,eigratio)
-%scatter(V_f,freqratio)
-%yline(0)
-%xlim([0,250])
-%ylim([-1,0.3])
-
-
-
-%real(omega)
-%imag(omega(:,1))
-%imag(omega(:,1)) / real(omega)
-%flutterfreqratio = 1 ./ sqrt(real(omega)) % need elementwise math to get both flutter and divergence at once
-%end
+freqRatio1 = imag(solutionMatrix(3,:)) ./ real(solutionMatrix(3,:));
+freqRatio2 = imag(solutionMatrix(4,:)) ./ real(solutionMatrix(4,:));
+plot()
