@@ -42,38 +42,33 @@ omega = eig(fluttermatrix);
 
 % set up conditions
 vel_range = [10,300]; % ft/s
-initial_k = 0.0001;
+initial_k = 0.001;
 stepLimiter = 0.5; % scaling factor to reduce how much value difference comes into play in solver
-iterations = 100;
+iterations = 10;
 convergence = 1e-6;
 
 % initialize the function
-% k0 = initial_k; % initial guess value for reduced frequency
-% V0 = vel_range(1); % velocity parameter to step through
-% initial_freq = initial_k * V0 / b; % calculate the initial unreduced frequency from the guess
-% freq_0 = freq_theta / sqrt(subs(real(omega(1)),k,k0)); % calculate the unreduced frequency at the given conditions
-% k1 = freq_0 * b / V0; % calculate the new reduced frequency from the given parameters
-% w = k1 - k0; % calculate step size
-% k2 = k0 + (stepLimiter * w); % calculate next parameter value to plug
+k0 = initial_k; % initial guess value for reduced frequency
+V0 = vel_range(1); % velocity parameter to step through
+initial_freq = initial_k * V0 / b; % calculate the initial unreduced frequency from the guess
+freq_0 = freq_theta / sqrt(subs(real(omega(1)),k,k0)); % calculate the unreduced frequency at the given conditions
+k1 = freq_0 * b / V0; % calculate the new reduced frequency from the given parameters
+w = k1 - k0; % calculate step size
+k2 = k0 + (stepLimiter * w); % calculate next parameter value to plug
 % this is where it repeats
-V0 = 166;
+
 k = initial_k;
 V = V0;
 
 for iter = 1:iterations
-    eigen = subs(omega); % calculate function
-    freq_f = freq_theta / sqrt(real(eigen(1))); % extract necessary component from function
-    k1 = double(freq_f * b / V); % calculate new value
-    w = k1 - k % calculate residual
-    if w > convergence
-        k = k + (stepLimiter * w); % produce next value to test
-    else
-        fprintf("Converged\n");
-        break;
-    end
+    iter;
+    eigen = subs(omega);
+    freq_f = freq_theta / sqrt(real(eigen(1)));
+    k1 = freq_f * b / V;
+    w = k1 - k;
+    
 end
-k
-V_f = freq_f * b / k
+
 %% N-R
 % k = 0.1844;
 % dk = 0.001;
