@@ -3,7 +3,7 @@
 % Long Suffering
 clc, clear, close all;
 
-% TN685 parameters - should converge near 831.6 ft/s and k = 0.406
+% TR685 parameters - should converge near 831.6 ft/s and k = 0.406
 % a = -0.4;
 % b = 6; % ft
 % x_thetabar = 0.2;
@@ -12,80 +12,84 @@ clc, clear, close all;
 % freq_h = freq_theta / 4; % rad/s
 % mu = 0.25;
 
-% Weisshaar parameters - should converge near
-a = -0.2;
-b = 3; % ft
+% Weisshaar parameters - should converge near 166 ft/s and 216 ft/s
+% depending on flutter vs divergence - depend son eigenvalue used
+% a = -0.2;
+% b = 3; % ft
+% x_thetabar = 0.1;
+% r_thetabar = 0.5;
+% freq_theta = 25; % rad/s
+% freq_h = 10; % rad/s
+% mu = 20;
+
+% Cippola N5800 Parameters - This is one of the examples shipped with
+% FinSim
+a = 0.0;
+b = 2 * 3.5625 / 12; % ft
 x_thetabar = 0.1;
-r_thetabar = 0.5;
-freq_theta = 25; % rad/s
-freq_h = 10; % rad/s
-mu = 20;
+r_thetabar = 0.57757;
+freq_theta = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
+% initial_k = 0.428
 
 
 i = sqrt(-1);
-
-
-syms h_bar theta_bar reduced_vel flutter_freq k
-%k = initial_guess;
-%for iter = 1:iterations
-%k = reduced_freq * b / reduced_vel;    
-%hold on;
-%for k = 0.001:0.001:3
-
-%end
-
-J_1 = besselj(1,k);
-Y_1 = bessely(1,k);
-Y_0 = bessely(0,k);
-J_0 = besselj(0,k);
-
-C = (J_1 - (i * Y_1)) / ((J_1 + Y_0) + (i * (J_0 - Y_1)));
-
-L_h = 1 - (i * 2 * C / k);
-L_alpha = 0.5 - (i * (1 + (2 * C) / k)) - (2 * C / k^2);
-M_alpha = (3/8) - (i / k);
-
-fluttermatrix = [(freq_theta^2 / freq_h^2) * (1 + (L_h / mu)), (freq_theta^2 / freq_h^2) * (x_thetabar + (mu^-1 * (L_alpha - ((0.5 + a) * L_h))));
-    ((x_thetabar / r_thetabar^2) + ((1 / (mu * r_thetabar^2)) * (0.5 - (0.5 + a) * L_h))), 1 + ((1 / (mu * r_thetabar^2)) * (M_alpha - ((L_alpha + 0.5) * (0.5 + a)) + (L_h * (0.5 + a)^2)))];
-fprime = diff(fluttermatrix,k);
-omega = eig(fluttermatrix);
+% I'm keeping these equations ehre so I don't lose them
+% syms h_bar theta_bar reduced_vel flutter_freq k
+% 
+% J_1 = besselj(1,k);
+% Y_1 = bessely(1,k);
+% Y_0 = bessely(0,k);
+% J_0 = besselj(0,k);
+% 
+% C = (J_1 - (i * Y_1)) / ((J_1 + Y_0) + (i * (J_0 - Y_1)));
+% 
+% L_h = 1 - (i * 2 * C / k);
+% L_alpha = 0.5 - (i * (1 + (2 * C) / k)) - (2 * C / k^2);
+% M_alpha = (3/8) - (i / k);
+% 
+% fluttermatrix = [(freq_theta^2 / freq_h^2) * (1 + (L_h / mu)), (freq_theta^2 / freq_h^2) * (x_thetabar + (mu^-1 * (L_alpha - ((0.5 + a) * L_h))));
+%     ((x_thetabar / r_thetabar^2) + ((1 / (mu * r_thetabar^2)) * (0.5 - (0.5 + a) * L_h))), 1 + ((1 / (mu * r_thetabar^2)) * (M_alpha - ((L_alpha + 0.5) * (0.5 + a)) + (L_h * (0.5 + a)^2)))];
+% omega = eig(fluttermatrix);
 
 %% New Solver Attempt
 
-
-
-
-% k0 = initial_k; % initial guess value for reduced frequency
-% V0 = vel_range(1); % velocity parameter to step through
-% initial_freq = initial_k * V0 / b; % calculate the initial unreduced frequency from the guess
-% freq_0 = freq_theta / sqrt(subs(real(omega(1)),k,k0)); % calculate the unreduced frequency at the given conditions
-% k1 = freq_0 * b / V0; % calculate the new reduced frequency from the given parameters
-% w = k1 - k0; % calculate step size
-% k2 = k0 + (stepLimiter * w); % calculate next parameter value to plug
-% this is where it repeats
-
 % set up conditions
 
-velStepSize = 0.2; % ft/s per step
-vel_range = [160,180]; % ft/s, range of values to test
+velStepSize = 0.1; % ft/s per step
+vel_range = [200,1800]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix = zeros([4,size(testVels,2)]); % each column corresponds to a test velocity
 
 
-initial_k = 1;
-stepLimiter = 0.5; % scaling factor to reduce how much value difference comes into play in solver
-iterations = 100;
+initial_k = 0.428;
+stepLimiter = 0.1; % scaling factor to reduce how much value difference comes into play in solver
+iterations = 150;
 convergence = 0.0001;
-
 % initialize the function
 
-for velStep = 1:n
+parfor velStep = 1:n
     V = testVels(velStep);
     k = initial_k;
-    % THIS IS NOT CONVERGING RIGHT, IT'S JUST GETTING CLOSE TO THE TEST
-    % VELOCITY
     for iter = 1:iterations
+
+        J_1 = besselj(1,k);
+        Y_1 = bessely(1,k);
+        Y_0 = bessely(0,k);
+        J_0 = besselj(0,k);
+        
+        C = (J_1 - (i * Y_1)) / ((J_1 + Y_0) + (i * (J_0 - Y_1)));
+        
+        L_h = 1 - (i * 2 * C / k);
+        L_alpha = 0.5 - (i * (1 + (2 * C) / k)) - (2 * C / k^2);
+        M_alpha = (3/8) - (i / k);
+        
+        fluttermatrix = [(freq_theta^2 / freq_h^2) * (1 + (L_h / mu)), (freq_theta^2 / freq_h^2) * (x_thetabar + (mu^-1 * (L_alpha - ((0.5 + a) * L_h))));
+            ((x_thetabar / r_thetabar^2) + ((1 / (mu * r_thetabar^2)) * (0.5 - (0.5 + a) * L_h))), 1 + ((1 / (mu * r_thetabar^2)) * (M_alpha - ((L_alpha + 0.5) * (0.5 + a)) + (L_h * (0.5 + a)^2)))];
+        omega = eig(fluttermatrix);
+
         eigen = subs(omega); % calculate function
         freq_f = freq_theta / sqrt(real(eigen(2))); % extract necessary component from function
         k1 = double(freq_f * b / V); % calculate new value
@@ -93,9 +97,8 @@ for velStep = 1:n
         if abs(w) > convergence && iter < iterations
             k = k + (stepLimiter * w); % produce next value to test
         else
-            fprintf("Calculation Complete in %d iterations\n",iter);
             V_f = freq_f * b / k;
-            fprintf("For V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",V,k,V_f);
+            fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
             solutionMatrix(:,velStep) = [k,V_f,eigen(1),eigen(2)].';
             break;
         end
@@ -107,4 +110,5 @@ freqRatio2 = imag(solutionMatrix(4,:)) ./ real(solutionMatrix(4,:));
 hold on;
 plot(testVels,freqRatio1)
 plot(testVels,freqRatio2)
+legend("First Freq Ratio","Second Freq Ratio","AutoUpdate","off")
 yline(0)
