@@ -118,6 +118,8 @@ plot(testVels,freqRatio1)
 plot(testVels,freqRatio2)
 legend("First Freq Ratio","Second Freq Ratio","AutoUpdate","off")
 yline(0)
+ylabel("Xi/Xr");
+xlabel("velocity");
 %axis([0 inf -1 0.2])
 hold off;
 
@@ -126,7 +128,7 @@ solutionMatrix(:,idx1)
 [val2, idx2] = find(abs(imag(solutionMatrix(4,:)) ./ real(solutionMatrix(4,:))) == min(abs(freqRatio1)));
 solutionMatrix(:,idx2)
 
-thetafreqratio1 = 1 ./ sqrt(real(solutionMatrix(4,:))); % in finsim these are also known as sqrt(X)
+thetafreqratio1 = 1 ./ sqrt(real(solutionMatrix(4,:)));
 thetafreqratio2 = 1 ./ sqrt(real(solutionMatrix(5,:)));
 figure;
 hold on;
@@ -134,6 +136,8 @@ grid on;
 plot(testVels,thetafreqratio1)
 plot(testVels,thetafreqratio2)
 legend("First Freq Ratio","Second Freq Ratio","AutoUpdate","off")
+ylabel("freq_f/freq_theta");
+xlabel("velocity");
 %axis([0 inf 0 1.2])
 hold off;
 
@@ -147,7 +151,9 @@ plot(invK,1 ./ thetafreqratio1)
 plot(invK,1 ./ thetafreqratio2)
 plot(invK,sqrtXi1)
 plot(invK,sqrtXi2)
-legend;
+xlabel("1/k");
+ylabel("sqrt(X)");
+legend("sqrt(Xr1)","sqrt(Xr2)","sqrt(Xi1)","sqrt(Xi2)");
 %axis([0 6 0.6 1.4])
 hold off;
 
