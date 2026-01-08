@@ -4,13 +4,13 @@
 clc, clear, close all;
 
 % TR685 parameters - should converge near 831.6 ft/s and k = 0.406
-a = -0.4;
-b = 6; % ft
-x_thetabar = 0.2;
-r_thetabar = sqrt(0.25);
-freq_theta = 90; % rad/s
-freq_h = freq_theta / 4; % rad/s
-mu = 4;
+% a = -0.4;
+% b = 6; % ft
+% x_thetabar = 0.2;
+% r_thetabar = sqrt(0.25);
+% freq_theta = 90; % rad/s
+% freq_h = freq_theta / 4; % rad/s
+% mu = 4;
 
 % Weisshaar parameters - should converge near 166 ft/s and 216 ft/s
 % depending on flutter vs divergence - depends on eigenvalue used
@@ -24,13 +24,13 @@ mu = 4;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-% a = 0.0;
-% b = 3.5625 / 12; % ft
-% x_thetabar = 0.0;
-% r_thetabar = 0.57757;
-% freq_theta = 2593.373; % rad/s
-% freq_h = 2458.08525; % rad/s
-% mu = 77.11441;
+a = 0.0;
+b = 3.5625 / 12; % ft
+x_thetabar = 0.0;
+r_thetabar = 0.57757;
+freq_theta = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
 
 
 i = sqrt(-1);
@@ -57,17 +57,17 @@ i = sqrt(-1);
 % set up conditions
 
 velStepSize = 1; % ft/s per step
-vel_range = [1,1300]; % ft/s, range of values to test
+vel_range = [1,4200]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
-solutionMatrix = zeros([5,size(testVels,2)]); % each column corresponds to a test velocity
+solutionMatrix = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
 
 
 initial_k = 0.226;
 stepLimiter = 1.0; % scaling factor to reduce how much value difference comes into play in solver
 iterations = 50;
 convergence = 0.0001;
-whicheigenvalue = 2;
+whicheigenvalue = 1;
 % initialize the function
 
 parfor velStep = 1:n
@@ -103,7 +103,7 @@ parfor velStep = 1:n
         else
             V_f = freq_f * b / k;
             fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
-            solutionMatrix(:,velStep) = [V,V_f,k,eigen(1),eigen(2)].';
+            solutionMatrix(:,velStep) = [V,V_f,k,eigen(1),eigen(2),freq_f].';
             break;
         end
     end
@@ -121,6 +121,7 @@ yline(0)
 ylabel("Xi/Xr");
 xlabel("velocity");
 %axis([0 inf -1 0.2])
+xticks(0:400:4000);
 hold off;
 
 [val1, idx1] = find(abs(imag(solutionMatrix(5,:)) ./ real(solutionMatrix(5,:))) == min(abs(freqRatio2)));
@@ -128,7 +129,7 @@ solutionMatrix(:,idx1)
 [val2, idx2] = find(abs(imag(solutionMatrix(4,:)) ./ real(solutionMatrix(4,:))) == min(abs(freqRatio1)));
 solutionMatrix(:,idx2)
 
-thetafreqratio1 = 1 ./ sqrt(real(solutionMatrix(4,:)));
+thetafreqratio1 = solutionMatrix(6,:) ./ freq_theta;
 thetafreqratio2 = 1 ./ sqrt(real(solutionMatrix(5,:)));
 figure;
 hold on;
@@ -141,19 +142,22 @@ xlabel("velocity");
 %axis([0 inf 0 1.2])
 hold off;
 
-sqrtXi1 = sqrt(imag(solutionMatrix(4,:)));
-sqrtXi2 = sqrt(imag(solutionMatrix(5,:)));
+sqrtXr1 = freq_theta ./ solutionMatrix(6,:);
+sqrtXi1 = sqrt(-i .* imag(solutionMatrix(4,:)));
+sqrtXi2 = sqrt(-i .* imag(solutionMatrix(5,:)));
 invK = 1 ./ solutionMatrix(3,:);
 figure;
 hold on;
 grid on;
-plot(invK,1 ./ thetafreqratio1)
+plot(invK,sqrtXr1)
 plot(invK,1 ./ thetafreqratio2)
 plot(invK,sqrtXi1)
 plot(invK,sqrtXi2)
 xlabel("1/k");
 ylabel("sqrt(X)");
 legend("sqrt(Xr1)","sqrt(Xr2)","sqrt(Xi1)","sqrt(Xi2)");
-%axis([0 6 0.6 1.4])
+axis([0 6 0.6 1.3])
+xticks(0:0.6:6)
+yticks(0.6:0.07:1.3)
 hold off;
 
