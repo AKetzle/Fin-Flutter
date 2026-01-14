@@ -42,13 +42,13 @@ clc, clear, close all;
 % mu = 40;
 
 % Y.C. Fung parameters - Page 219
-a =  -0.15;
-b = 2;
-x_thetabar = 0.25;
-r_thetabar = sqrt(0.388);
-freq_theta = 48;
-freq_h = (55.9 / 64.1) * 48;
-mu = 76;
+% a =  -0.15;
+% b = 2;
+% x_thetabar = 0.25;
+% r_thetabar = sqrt(0.388);
+% freq_theta = 48;
+% freq_h = (55.9 / 64.1) * 48;
+% mu = 76;
 
 i = sqrt(-1);
 % I'm keeping these equations here so I don't lose them
@@ -73,8 +73,8 @@ i = sqrt(-1);
 
 % set up conditions
 
-velStepSize = 0.05; % ft/s per step
-vel_range = [50,400]; % ft/s, range of values to test
+velStepSize = 1; % ft/s per step
+vel_range = [50,2000]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix1 = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
