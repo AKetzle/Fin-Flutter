@@ -14,13 +14,13 @@ clc, clear, close all;
 
 % Weisshaar parameters - should converge near 166 ft/s and 216 ft/s
 % depending on flutter vs divergence - depends on eigenvalue used
-a = -0.2;
-b = 3; % ft
-x_thetabar = 0.1;
-r_thetabar = 0.5;
-freq_theta = 25; % rad/s
-freq_h = 10; % rad/s
-mu = 20;
+% a = -0.2;
+% b = 3; % ft
+% x_thetabar = 0.1;
+% r_thetabar = 0.5;
+% freq_theta = 25; % rad/s
+% freq_h = 10; % rad/s
+% mu = 20;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
@@ -32,6 +32,23 @@ mu = 20;
 % freq_h = 2458.08525; % rad/s
 % mu = 77.11441;
 
+% Y.C. Fung Parameters - Page 236
+% a = 0.0;
+% b = 30; % ft
+% x_thetabar = 0.0;
+% r_thetabar = sqrt(0.6222);
+% freq_theta = sqrt(2.41);
+% freq_h = sqrt(0.775);
+% mu = 40;
+
+% Y.C. Fung parameters - Page 219
+a =  -0.15;
+b = 2;
+x_thetabar = 0.25;
+r_thetabar = sqrt(0.388);
+freq_theta = 48;
+freq_h = (55.9 / 64.1) * 48;
+mu = 76;
 
 i = sqrt(-1);
 % I'm keeping these equations here so I don't lose them
@@ -56,8 +73,8 @@ i = sqrt(-1);
 
 % set up conditions
 
-velStepSize = 0.1; % ft/s per step
-vel_range = [10,400]; % ft/s, range of values to test
+velStepSize = 0.05; % ft/s per step
+vel_range = [50,400]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix1 = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
@@ -102,7 +119,7 @@ parfor velStep = 1:n
             k = k + (stepLimiter * w); % produce next value to test
         else
             V_f = freq_f * b / k;
-            %fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
+            fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
             solutionMatrix1(:,velStep) = [V,V_f,k,eigen(1),eigen(2),freq_f].';
             break;
         end
@@ -147,7 +164,7 @@ parfor velStep = 1:n
             k = k + (stepLimiter * w); % produce next value to test
         else
             V_f = freq_f * b / k;
-            %fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
+            fprintf("Calculation Complete in %d iterations\nFor V = %g ft/s:\nk = %g\nV_f = %g ft/s\n",iter,V,k,V_f);
             solutionMatrix2(:,velStep) = [V,V_f,k,eigen(1),eigen(2),freq_f].';
             break;
         end
