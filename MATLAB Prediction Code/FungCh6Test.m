@@ -36,8 +36,8 @@ r_alpha = 0.57785;
 freq_alpha = 2866.77844;
 freq_h = 1853.69007;
 mu = 110.28942;
-g_alpha = 0;
-g_h = 0;
+g_alpha = 0.005;
+g_h = 0.005;
 
 % page 236 parameters
 % mu = 40;
@@ -51,7 +51,7 @@ g_h = 0;
 % g_h = 0;
 
 invkstepsize = 0.00001;
-invkrange = [0,10];
+invkrange = [0,14];
 n = uint32(((invkrange(2) - invkrange(1)) / invkstepsize) + 1);
 invk_set = linspace(invkrange(1),invkrange(2),n);
 solutionmatrix = zeros([11,size(invk_set,2)]);
@@ -95,7 +95,7 @@ end
 
 %% Plotting
 
-XRatio1 = solutionmatrix(7,:) ./ solutionmatrix(9,:);
+XRatio1 = abs(1 - abs(solutionmatrix(7,:) ./ solutionmatrix(9,:)));
 XRatio2 = abs(1 - abs(solutionmatrix(8,:) ./ solutionmatrix(9,:)));
 
 hold on;
