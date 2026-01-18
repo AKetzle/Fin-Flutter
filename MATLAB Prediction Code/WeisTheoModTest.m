@@ -49,11 +49,6 @@ clc, clear, close all;
 % freq_theta = 48;
 % freq_h = (55.9 / 64.1) * 48;
 % mu = 76;
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
-=======
->>>>>>> Stashed changes
 
 % Doppler's Fin
 a =  0.0;
