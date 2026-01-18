@@ -58,10 +58,6 @@ r_thetabar = 0.57785;
 freq_theta = 2866.77844;
 freq_h = 1853.69007;
 mu = 110.28942;
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 
 i = sqrt(-1);
 % I'm keeping these equations here so I don't lose them
@@ -87,15 +83,7 @@ i = sqrt(-1);
 % set up conditions
 
 velStepSize = 1; % ft/s per step
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-vel_range = [50,2000]; % ft/s, range of values to test
-=======
 vel_range = [50,3000]; % ft/s, range of values to test
->>>>>>> Stashed changes
-=======
-vel_range = [50,3000]; % ft/s, range of values to test
->>>>>>> Stashed changes
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix1 = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
