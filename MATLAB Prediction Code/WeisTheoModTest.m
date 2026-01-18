@@ -50,7 +50,10 @@ clc, clear, close all;
 % freq_h = (55.9 / 64.1) * 48;
 % mu = 76;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 =======
+=======
+>>>>>>> Stashed changes
 
 % Doppler's Fin
 a =  0.0;
@@ -60,6 +63,9 @@ r_thetabar = 0.57785;
 freq_theta = 2866.77844;
 freq_h = 1853.69007;
 mu = 110.28942;
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 i = sqrt(-1);
@@ -87,7 +93,11 @@ i = sqrt(-1);
 
 velStepSize = 1; % ft/s per step
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 vel_range = [50,2000]; % ft/s, range of values to test
+=======
+vel_range = [50,3000]; % ft/s, range of values to test
+>>>>>>> Stashed changes
 =======
 vel_range = [50,3000]; % ft/s, range of values to test
 >>>>>>> Stashed changes
