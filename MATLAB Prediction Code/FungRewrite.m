@@ -64,16 +64,21 @@ delta_R_A = (1 - (g_h * g_alpha)) * mu^2 * r_alpha.^2 * freq_h.^2 / freq_alpha.^
 delta_R_B = (mu * freq_h.^2 / freq_alpha.^2 .* (E_R - (g_h .* E_I))) + (mu * r_alpha.^2 .* (A_R - (g_alpha .* A_I)));
 delta_R_C = (A_R .* E_R) - (B_R .* D_R) - (A_I .* E_I) + (B_I .* D_I);
 
-delta_I_A = (g_h + g_alpha) .* mu^2 .* r_alpha.^2 .* freq_h.^2 ./ freq_alpha.^2;
+delta_I_A = (g_h + g_alpha) * mu^2 * r_alpha^2 * freq_h.^2 / freq_alpha^2;
 delta_I_B = (mu .* freq_h.^2 ./ freq_alpha.^2 .* ((g_h .* E_R) + E_I)) + (mu .* r_alpha.^2 .* (A_I + (g_alpha .* A_R)));
 delta_I_C = (A_I .* E_R) - (B_R .* D_I) + (A_R .* E_I) - (B_I .* D_R);
 
 X_R1 = (-delta_R_B + sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
 X_R2 = (-delta_R_B - sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
-%X_I1 = -delta_I_C ./ delta_I_B;
-X_I1 = (-delta_I_B + sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
-X_I2 = (-delta_I_B - sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
-%X_I2 = -delta_I_C ./ delta_I_B;
+
+if(~delta_I_A == 0)
+    X_I1 = (-delta_I_B + sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
+    X_I2 = (-delta_I_B - sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
+else
+    X_I1 = -delta_I_C ./ delta_I_B;
+    X_I2 = -delta_I_C ./ delta_I_B;
+end
+
 rt_X_R1 = sqrt(X_R1);
 rt_X_R2 = sqrt(X_R2);
 rt_X_I1 = sqrt(X_I1);
