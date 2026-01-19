@@ -3,15 +3,15 @@ clc, clear;
 i = sqrt(-1);
 
 % page 219 parameters
-mu = 76;
-a_h = -0.15;
-x_alpha = 0.25;
-r_alpha = sqrt(0.388);
-b = 5 / 12; % ft
-freq_alpha = 64.1; % rad/s
-freq_h = 55.9; % rad/s
-g_alpha = 0;
-g_h = 0;
+% mu = 76;
+% a_h = -0.15;
+% x_alpha = 0.25;
+% r_alpha = sqrt(0.388);
+% b = 5 / 12; % ft
+% freq_alpha = 64.1; % rad/s
+% freq_h = 55.9; % rad/s
+% g_alpha = 0;
+% g_h = 0;
 
 % doppler's fin
 % a_h =  0.0;
@@ -26,15 +26,15 @@ g_h = 0;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-% a_h = 0.0;
-% b = 3.5625 / 12; % ft
-% x_alpha = 0.316;
-% r_alpha = 0.57757;
-% freq_alpha = 2593.373; % rad/s
-% freq_h = 2458.08525; % rad/s
-% mu = 77.11441;
-% g_alpha = 0.005;
-% g_h = 0.005;
+a_h = 0.0;
+b = 3.5625 / 12; % ft
+x_alpha = 0.316;
+r_alpha = 0.57757;
+freq_alpha = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
+g_alpha = 0.005;
+g_h = 0.005;
 
 
 invkstepsize = 0.001;

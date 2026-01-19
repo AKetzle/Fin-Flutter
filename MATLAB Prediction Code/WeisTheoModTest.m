@@ -83,7 +83,7 @@ i = sqrt(-1);
 % set up conditions
 
 velStepSize = 1; % ft/s per step
-vel_range = [50,3000]; % ft/s, range of values to test
+vel_range = [50,3400]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix1 = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
