@@ -2,7 +2,7 @@
 % based on Theodorsen Method
 % Alexander Ketzle
 % starts around page 213
-clc, clear, close all;
+clc, clear;
 i = sqrt(-1);
 
 % TR685 parameters - should converge near 831.6 ft/s and k = 0.406
@@ -18,26 +18,26 @@ i = sqrt(-1);
 
 
 % page 219 parameters
-% mu = 76;
-% a_h = -0.15;
-% x_alpha = 0.25;
-% r_alpha = sqrt(0.388);
-% b = 5 / 12; % ft
-% freq_alpha = 64.1; % rad/s
-% freq_h = 55.9; % rad/s
-% g_alpha = 0;
-% g_h = 0;
+mu = 76;
+a_h = -0.15;
+x_alpha = 0.25;
+r_alpha = sqrt(0.388);
+b = 5 / 12; % ft
+freq_alpha = 64.1; % rad/s
+freq_h = 55.9; % rad/s
+g_alpha = 0;
+g_h = 0;
 
 % doppler's fin
-a_h =  0.0;
-b = 2.25/12;
-x_alpha = 0.0;
-r_alpha = 0.57785;
-freq_alpha = 2866.77844;
-freq_h = 1853.69007;
-mu = 110.28942;
-g_alpha = 0.005;
-g_h = 0.005;
+% a_h =  0.0;
+% b = 2.25/12;
+% x_alpha = 0.0;
+% r_alpha = 0.57785;
+% freq_alpha = 2866.77844;
+% freq_h = 1853.69007;
+% mu = 110.28942;
+% g_alpha = 0.005;
+% g_h = 0.005;
 
 % page 236 parameters
 % mu = 40;
@@ -50,11 +50,25 @@ g_h = 0.005;
 % g_alpha = 0;
 % g_h = 0;
 
+% Cippola N5800 Parameters - This is one of the examples shipped with
+%FinSim
+a_h = 0.0;
+b = 3.5625 / 12; % ft
+x_alpha = 0.316;
+r_alpha = 0.57757;
+freq_alpha = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
+g_alpha = 0.005;
+g_h = 0.005;
+
+
 invkstepsize = 0.00001;
-invkrange = [0,14];
+invkrange = [invkstepsize,6.4];
 n = uint32(((invkrange(2) - invkrange(1)) / invkstepsize) + 1);
 invk_set = linspace(invkrange(1),invkrange(2),n);
-solutionmatrix = zeros([11,size(invk_set,2)]);
+solutionmatrix = zeros([13,size(invk_set,2)]);
+imagMatrix1 = zeros([3,size(invk_set,2)]);
 
 parfor invkstep = 1:n
     k_inv = invk_set(invkstep);
@@ -89,8 +103,9 @@ parfor invkstep = 1:n
     rt_X_R2 = sqrt(X_R2);
     rt_X_I1 = sqrt(X_I1);
     rt_X_I2 = sqrt(X_I2);
-
-    solutionmatrix(:,invkstep) = [k, k_inv, X_R1, X_R2, X_I1, X_I2, rt_X_R1, rt_X_R2, rt_X_I1, rt_X_I2,delta_I_A].';
+    imagMatrix1(:,invkstep) = [delta_I_A; delta_I_B; delta_I_C];
+    realMatrix1(:,invkstep) = [delta_R_A; delta_R_B; delta_R_C];
+    solutionmatrix(:,invkstep) = [k, k_inv, X_R1, X_R2, X_I1, X_I2, rt_X_R1, rt_X_R2, rt_X_I1, rt_X_I2,delta_I_A,delta_I_B,delta_I_C].';
 end
 
 %% Plotting
@@ -98,6 +113,8 @@ end
 XRatio1 = abs(1 - abs(solutionmatrix(7,:) ./ solutionmatrix(9,:)));
 XRatio2 = abs(1 - abs(solutionmatrix(8,:) ./ solutionmatrix(9,:)));
 
+
+figure();
 hold on;
 invk = solutionmatrix(2,:);
 rt_X = solutionmatrix(7:10,:);
