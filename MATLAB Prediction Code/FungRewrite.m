@@ -33,8 +33,8 @@ r_alpha = 0.57757;
 freq_alpha = 2593.373; % rad/s
 freq_h = 2458.08525; % rad/s
 mu = 77.11441;
-g_alpha = 0.005;
-g_h = 0.005;
+g_alpha = 0.00;
+g_h = 0.00;
 
 
 invkstepsize = 0.001;

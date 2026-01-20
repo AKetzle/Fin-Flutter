@@ -212,16 +212,16 @@ solutionMatrix2(:,idx4)
 
 thetafreqratio1 = solutionMatrix1(6,:) ./ freq_theta;
 thetafreqratio2 = solutionMatrix2(6,:) ./ freq_theta;
-figure;
-hold on;
-grid on;
-plot(testVels,thetafreqratio1)
-plot(testVels,thetafreqratio2)
-legend("First Freq Ratio","Second Freq Ratio","AutoUpdate","off")
-ylabel("freq_f/freq_theta");
-xlabel("velocity");
-%axis([0 inf 0 1.2])
-hold off;
+% figure;
+% hold on;
+% grid on;
+% plot(testVels,thetafreqratio1)
+% plot(testVels,thetafreqratio2)
+% legend("First Freq Ratio","Second Freq Ratio","AutoUpdate","off")
+% ylabel("freq_f/freq_theta");
+% xlabel("velocity");
+% %axis([0 inf 0 1.2])
+% hold off;
 
 sqrtXr1 = freq_theta ./ solutionMatrix1(6,:);
 sqrtXr2 = freq_theta ./ solutionMatrix2(6,:);
@@ -229,17 +229,17 @@ sqrtXi1 = sqrt(-i .* imag(solutionMatrix1(4,:)));
 sqrtXi2 = sqrt(-i .* imag(solutionMatrix2(4,:)));
 invK1 = 1 ./ solutionMatrix1(3,:);
 invK2 = 1 ./ solutionMatrix2(3,:);
-figure;
-hold on;
-grid on;
-plot(invK1,sqrtXr1)
-plot(invK1,1 ./ thetafreqratio2)
-plot(invK1,sqrtXi1)
-plot(invK1,sqrtXi2)
-xlabel("1/k");
-ylabel("sqrt(X)");
-legend("sqrt(Xr1)","sqrt(Xr2)","sqrt(Xi1)","sqrt(Xi2)");
-axis([0 6 0.9 2.6])
-xticks(0:0.6:6)
-yticks(0.9:0.17:2.6)
-hold off;
+% figure;
+% hold on;
+% grid on;
+% plot(invK1,sqrtXr1)
+% plot(invK1,1 ./ thetafreqratio2)
+% plot(invK1,sqrtXi1)
+% plot(invK1,sqrtXi2)
+% xlabel("1/k");
+% ylabel("sqrt(X)");
+% legend("sqrt(Xr1)","sqrt(Xr2)","sqrt(Xi1)","sqrt(Xi2)");
+% axis([0 6 0.9 2.6])
+% xticks(0:0.6:6)
+% yticks(0.9:0.17:2.6)
+% hold off;
