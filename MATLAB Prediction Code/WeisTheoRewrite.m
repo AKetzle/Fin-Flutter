@@ -27,20 +27,29 @@ i = sqrt(-1);
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-a_h = 0.0;
-b = 3.5625 / 12; % ft
-x_alpha = 0.316;
-r_alpha = 0.57757;
-freq_alpha = 2593.373; % rad/s
-freq_h = 2458.08525; % rad/s
-mu = 77.11441;
-g_alpha = 0.00;
-g_h = 0.00;
+% a_h = 0.0;
+% b = 3.5625 / 12; % ft
+% x_alpha = 0.316;
+% r_alpha = 0.57757;
+% freq_alpha = 2593.373; % rad/s
+% freq_h = 2458.08525; % rad/s
+% mu = 77.11441;
+% g_alpha = 0.00;
+% g_h = 0.00;
+
+% weisshaar page 424 example
+a_h = -0.2;
+b = 3;
+x_alpha = 0.1;
+r_alpha = 0.5;
+freq_h = 10;
+freq_alpha = 25;
+mu = 20;
 
 %% Calculation
 
-kStepSize = 0.0001;
-kRange = [kStepSize,14];
+kStepSize = 0.00001;
+kRange = [0.1,6];
 n = ((kRange(2) - kRange(1)) / kStepSize) + 1;
 kSet = linspace(kRange(1),kRange(2),n);
 
@@ -59,5 +68,36 @@ A12 = (freq_alpha.^2 ./ freq_h.^2) .* (x_alpha + (mu.^-1 .* (L_alpha - ((0.5 + a
 A21 = ((x_alpha ./ r_alpha.^2) + ((1 ./ (mu .* r_alpha.^2)) .* (0.5 - (0.5 + a_h) .* L_h)));
 A22 = 1 + ((1 ./ (mu .* r_alpha.^2)) .* (M_alpha - ((L_alpha + 0.5) .* (0.5 + a_h)) + (L_h .* (0.5 + a_h).^2)));
 
-fluttermatrix = [A11, A12; A21, A22];
-omega = eig(fluttermatrix);
+fluttermatrix(1,1,:) = A11;
+fluttermatrix(1,2,:) = A12;
+fluttermatrix(2,1,:) = A21;
+fluttermatrix(2,2,:) = A22;
+
+%fluttermatrix1 = [A11, A12; A21, A22]; % need to rethink the formation of this matrix
+%fluttermatrix2 = pagetranspose(fluttermatrix1);
+%fluttermatrix = reshape(fluttermatrix1,2,2,[]);
+
+omega = pageeig(fluttermatrix); 
+omega = reshape(omega,2,size(omega,3));
+omega_r = real(omega);
+omega_i = imag(omega);
+freq_f = freq_alpha ./ real(sqrt(omega_r));
+V_f = (freq_f .* b ./ k);
+eigRatio = (omega_i ./ omega_r);
+freqRatio = freq_f ./ freq_alpha;
+
+%% Plotting
+
+% U vs g
+hold on;
+plot(V_f(1,:),eigRatio(1,:))
+plot(V_f(2,:),eigRatio(2,:))
+yline(0)
+ylabel("Xi/Xr");
+xlabel("velocity");
+
+% freq ratio vs U
+figure();
+hold on;
+plot(V_f(1,:),freqRatio(1,:))
+plot(V_f(2,:),freqRatio(2,:))

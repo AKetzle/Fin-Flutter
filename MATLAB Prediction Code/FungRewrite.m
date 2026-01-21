@@ -26,16 +26,28 @@ i = sqrt(-1);
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-a_h = 0.0;
-b = 3.5625 / 12; % ft
-x_alpha = 0.316;
-r_alpha = 0.57757;
-freq_alpha = 2593.373; % rad/s
-freq_h = 2458.08525; % rad/s
-mu = 77.11441;
-g_alpha = 0.00;
-g_h = 0.00;
+% a_h = 0.0;
+% b = 3.5625 / 12; % ft
+% x_alpha = 0.316;
+% r_alpha = 0.57757;
+% freq_alpha = 2593.373; % rad/s
+% freq_h = 2458.08525; % rad/s
+% mu = 77.11441;
+% g_alpha = 0.00;
+% g_h = 0.00;
 
+% weisshaar page 424 example
+a_h = -0.2;
+b = 3;
+x_alpha = 0.1;
+r_alpha = 0.5;
+freq_h = 10;
+freq_alpha = 25;
+mu = 20;
+g_alpha = 0;
+g_h = 0;
+
+%%
 
 invkstepsize = 0.00001;
 invkrange = [invkstepsize,8];
