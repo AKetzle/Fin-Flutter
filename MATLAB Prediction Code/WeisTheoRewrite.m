@@ -15,15 +15,15 @@ i = sqrt(-1);
 % g_h = 0;
 
 % doppler's fin
-% a_h =  0.0;
-% b = 2.25/12;
-% x_alpha = 0.0;
-% r_alpha = 0.57785;
-% freq_alpha = 2866.77844;
-% freq_h = 1853.69007;
-% mu = 110.28942;
-% g_alpha = 0.005;
-% g_h = 0.005;
+a_h =  0.0;
+b = 2.25/12;
+x_alpha = 0.0;
+r_alpha = 0.57785;
+freq_alpha = 2866.77844;
+freq_h = 1853.69007;
+mu = 110.28942;
+g_alpha = 0.005;
+g_h = 0.005;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
@@ -38,13 +38,13 @@ i = sqrt(-1);
 % g_h = 0.00;
 
 % weisshaar page 424 example
-a_h = -0.2;
-b = 3;
-x_alpha = 0.1;
-r_alpha = 0.5;
-freq_h = 10;
-freq_alpha = 25;
-mu = 20;
+% a_h = -0.2;
+% b = 3;
+% x_alpha = 0.1;
+% r_alpha = 0.5;
+% freq_h = 10;
+% freq_alpha = 25;
+% mu = 20;
 
 %% Calculation
 
@@ -87,6 +87,9 @@ eigRatio = (omega_i ./ omega_r);
 freqRatio = freq_f ./ freq_alpha;
 
 %% Plotting
+
+
+
 
 % U vs g
 hold on;
