@@ -37,7 +37,7 @@ g_alpha = 0.00;
 g_h = 0.00;
 
 
-invkstepsize = 0.001;
+invkstepsize = 0.00001;
 invkrange = [invkstepsize,8];
 n = uint32(((invkrange(2) - invkrange(1)) / invkstepsize) + 1);
 invk_set = linspace(invkrange(1),invkrange(2),n);

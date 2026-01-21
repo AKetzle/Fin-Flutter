@@ -24,13 +24,13 @@ clc, clear, close all;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-% a = 0.0;
-% b = 3.5625 / 12; % ft
-% x_thetabar = 0.316;
-% r_thetabar = 0.57757;
-% freq_theta = 2593.373; % rad/s
-% freq_h = 2458.08525; % rad/s
-% mu = 77.11441;
+a = 0.0;
+b = 3.5625 / 12; % ft
+x_thetabar = 0.316;
+r_thetabar = 0.57757;
+freq_theta = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
 
 % Y.C. Fung Parameters - Page 236
 % a = 0.0;
@@ -51,13 +51,13 @@ clc, clear, close all;
 % mu = 76;
 
 % Doppler's Fin
-a =  0.0;
-b = 2.25/12;
-x_thetabar = 0.0;
-r_thetabar = 0.57785;
-freq_theta = 2866.77844;
-freq_h = 1853.69007;
-mu = 110.28942;
+% a =  0.0;
+% b = 2.25/12;
+% x_thetabar = 0.0;
+% r_thetabar = 0.57785;
+% freq_theta = 2866.77844;
+% freq_h = 1853.69007;
+% mu = 110.28942;
 
 i = sqrt(-1);
 % I'm keeping these equations here so I don't lose them
@@ -83,7 +83,7 @@ i = sqrt(-1);
 % set up conditions
 
 velStepSize = 1; % ft/s per step
-vel_range = [50,3400]; % ft/s, range of values to test
+vel_range = [1400,3400]; % ft/s, range of values to test
 n = ((vel_range(2) - vel_range(1)) / velStepSize) + 1;
 testVels = linspace(vel_range(1), vel_range(2), n);
 solutionMatrix1 = zeros([6,size(testVels,2)]); % each column corresponds to a test velocity
