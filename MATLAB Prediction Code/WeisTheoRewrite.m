@@ -73,10 +73,6 @@ fluttermatrix(1,2,:) = A12;
 fluttermatrix(2,1,:) = A21;
 fluttermatrix(2,2,:) = A22;
 
-%fluttermatrix1 = [A11, A12; A21, A22]; % need to rethink the formation of this matrix
-%fluttermatrix2 = pagetranspose(fluttermatrix1);
-%fluttermatrix = reshape(fluttermatrix1,2,2,[]);
-
 omega = pageeig(fluttermatrix); 
 omega = reshape(omega,2,size(omega,3));
 omega_r = real(omega);
