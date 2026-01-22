@@ -50,8 +50,8 @@ g_h = 0.005;
 
 kStepSize = 0.00001;
 kRange = [0.1,6];
-n = ((kRange(2) - kRange(1)) / kStepSize) + 1;
-kSet = linspace(kRange(1),kRange(2),n);
+n = ((max(kRange) - min(kRange)) / kStepSize) + 1;
+kSet = linspace(kRange(2),kRange(1),n);
 
 k = kSet;
 
@@ -73,7 +73,7 @@ fluttermatrix(1,2,:) = A12;
 fluttermatrix(2,1,:) = A21;
 fluttermatrix(2,2,:) = A22;
 
-omega = pageeig(fluttermatrix); 
+omega(1,:) = (A11(:) + A22(:)) - sqrt((A11(:) + A22(:)).^2); 
 omega = reshape(omega,2,size(omega,3));
 omega_r = real(omega);
 omega_i = imag(omega);
