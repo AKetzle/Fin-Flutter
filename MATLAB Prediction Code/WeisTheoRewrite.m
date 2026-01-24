@@ -14,31 +14,31 @@ clc, clear
 % g_h = 0;
 
 % doppler's fin
-a_h =  0.0;
-b = 2.25/12;
-x_alpha = 0.0;
-r_alpha = 0.57785;
-freq_alpha = 2866.77844;
-freq_h = 1853.69007;
-mu = 110.28942;
-g_alpha = 0.005;
-g_h = 0.005;
+% a_h =  0.0;
+% b = 2.25/12; % ft
+% x_alpha = 0.0;
+% r_alpha = 0.57785;
+% freq_alpha = 2866.77844; % rad/s
+% freq_h = 1853.69007; % rad/s
+% mu = 110.28942;
+% g_alpha = 0.005;
+% g_h = 0.005;
 
 % Cippola N5800 Parameters - This is one of the examples shipped with
 %FinSim
-% a_h = 0.0;
-% b = 3.5625 / 12; % ft
-% x_alpha = 0.316;
-% r_alpha = 0.57757;
-% freq_alpha = 2593.373; % rad/s
-% freq_h = 2458.08525; % rad/s
-% mu = 77.11441;
-% g_alpha = 0.00;
-% g_h = 0.00;
+a_h = 0.0;
+b = 3.5625 / 12; % ft
+x_alpha = 0.316;
+r_alpha = 0.57757;
+freq_alpha = 2593.373; % rad/s
+freq_h = 2458.08525; % rad/s
+mu = 77.11441;
+g_alpha = 0.00;
+g_h = 0.00;
 
 % weisshaar page 424 example
 % a_h = -0.2;
-% b = 3;
+% b = 3; % ft
 % x_alpha = 0.1;
 % r_alpha = 0.5;
 % freq_h = 10;
@@ -68,14 +68,9 @@ A12 = (freq_alpha.^2 ./ freq_h.^2) .* (x_alpha + (mu.^-1 .* (L_alpha - ((0.5 + a
 A21 = ((x_alpha ./ r_alpha.^2) + ((1 ./ (mu .* r_alpha.^2)) .* (0.5 - (0.5 + a_h) .* L_h)));
 A22 = 1 + ((1 ./ (mu .* r_alpha.^2)) .* (M_alpha - ((L_alpha + 0.5) .* (0.5 + a_h)) + (L_h .* (0.5 + a_h).^2)));
 
-% fluttermatrix(1,1,:) = A11;
-% fluttermatrix(1,2,:) = A12;
-% fluttermatrix(2,1,:) = A21;
-% fluttermatrix(2,2,:) = A22;
-
 omega(1,:) = ((A11(:) + A22(:)) - sqrt((A11(:) + A22(:)).^2 - (4 * (A11(:) .* A22(:) - A12(:) .* A21(:))))) ./ 2; 
 omega(2,:) = ((A11(:) + A22(:)) + sqrt((A11(:) + A22(:)).^2 - (4 * (A11(:) .* A22(:) - A12(:) .* A21(:))))) ./ 2;
-%omega = reshape(omega,2,size(omega,3));
+
 omega_r = real(omega);
 omega_i = imag(omega);
 freq_f = freq_alpha ./ real(sqrt(omega_r));
@@ -85,7 +80,23 @@ freqRatio = freq_f ./ freq_alpha;
 
 %% Plotting
 
+if(max(eigRatio(1,:)) > 0)
+    [rowf,colf] = find(abs(eigRatio(1,:)) == min(abs(eigRatio(1,:))));
+    Uf = V_f(rowf,colf);
+    flutterFreq = freq_f(rowf,colf) / (2 * pi());
+    [~,cold] = find(abs(eigRatio(2,:)) == min(abs(eigRatio(2,:))));
+    Ud = V_f(2,cold);
+    freq_div = freq_f(2,cold) / (2 * pi());
+else
+    [rowf,colf] = find(abs(eigRatio(2,:)) == min(abs(eigRatio(2,:))));
+    Uf = V_f(rowf,colf);
+    flutterFreq = freq_f(rowf,colf) / (2 * pi());
+    [~,cold] = find(abs(eigRatio(1,:)) == min(abs(eigRatio(1,:))));
+    Ud = V_f(1,cold);
+    freq_div = freq_f(1,cold) / (2 * pi());
+end
 
+fprintf("Uf = %g ft/s\nFcr = %g Hz\nUd = %g ft/s\nFd = %g hz\n",Uf,flutterFreq,Ud,freq_div)
 
 
 % U vs g
@@ -95,8 +106,10 @@ plot(V_f(1,:),eigRatio(1,:))
 plot(V_f(2,:),eigRatio(2,:))
 yline(0)
 ylabel("Xi/Xr");
-xlabel("velocity");
+xlabel("Velocity");
 xlim([0 max(V_f(2,:) * 1.2)])
+
+
 
 % freq ratio vs U
 % figure();
