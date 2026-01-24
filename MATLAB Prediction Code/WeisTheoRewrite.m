@@ -1,7 +1,6 @@
 %% Rewrite of the Weisshaar Metrix method for the theodorsen function
 % Alexander Ketzle
 clc, clear
-i = sqrt(-1);
 
 % page 219 parameters
 % mu = 76;
@@ -48,8 +47,9 @@ g_h = 0.005;
 
 %% Calculation
 
+i = sqrt(-1);
 kStepSize = 0.00001;
-kRange = [0.1,6];
+kRange = [kStepSize,6];
 n = ((max(kRange) - min(kRange)) / kStepSize) + 1;
 kSet = linspace(kRange(2),kRange(1),n);
 
@@ -68,13 +68,14 @@ A12 = (freq_alpha.^2 ./ freq_h.^2) .* (x_alpha + (mu.^-1 .* (L_alpha - ((0.5 + a
 A21 = ((x_alpha ./ r_alpha.^2) + ((1 ./ (mu .* r_alpha.^2)) .* (0.5 - (0.5 + a_h) .* L_h)));
 A22 = 1 + ((1 ./ (mu .* r_alpha.^2)) .* (M_alpha - ((L_alpha + 0.5) .* (0.5 + a_h)) + (L_h .* (0.5 + a_h).^2)));
 
-fluttermatrix(1,1,:) = A11;
-fluttermatrix(1,2,:) = A12;
-fluttermatrix(2,1,:) = A21;
-fluttermatrix(2,2,:) = A22;
+% fluttermatrix(1,1,:) = A11;
+% fluttermatrix(1,2,:) = A12;
+% fluttermatrix(2,1,:) = A21;
+% fluttermatrix(2,2,:) = A22;
 
-omega(1,:) = (A11(:) + A22(:)) - sqrt((A11(:) + A22(:)).^2); 
-omega = reshape(omega,2,size(omega,3));
+omega(1,:) = ((A11(:) + A22(:)) - sqrt((A11(:) + A22(:)).^2 - (4 * (A11(:) .* A22(:) - A12(:) .* A21(:))))) ./ 2; 
+omega(2,:) = ((A11(:) + A22(:)) + sqrt((A11(:) + A22(:)).^2 - (4 * (A11(:) .* A22(:) - A12(:) .* A21(:))))) ./ 2;
+%omega = reshape(omega,2,size(omega,3));
 omega_r = real(omega);
 omega_i = imag(omega);
 freq_f = freq_alpha ./ real(sqrt(omega_r));
@@ -88,15 +89,19 @@ freqRatio = freq_f ./ freq_alpha;
 
 
 % U vs g
+figure();
 hold on;
 plot(V_f(1,:),eigRatio(1,:))
 plot(V_f(2,:),eigRatio(2,:))
 yline(0)
 ylabel("Xi/Xr");
 xlabel("velocity");
+xlim([0 max(V_f(2,:) * 1.2)])
 
 % freq ratio vs U
-figure();
-hold on;
-plot(V_f(1,:),freqRatio(1,:))
-plot(V_f(2,:),freqRatio(2,:))
+% figure();
+% hold on;
+% plot(V_f(1,:),freqRatio(1,:))
+% plot(V_f(2,:),freqRatio(2,:))
+% xlim([0 max(V_f(2,:) * 1.2)])
+% min(freqRatio(1,:))

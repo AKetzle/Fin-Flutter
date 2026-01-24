@@ -1,6 +1,6 @@
 %% Fung Ch6 Rewrite
 clc, clear;
-i = sqrt(-1);
+
 
 % page 219 parameters
 % mu = 76;
@@ -48,7 +48,7 @@ g_alpha = 0;
 g_h = 0;
 
 %%
-
+i = sqrt(-1);
 invkstepsize = 0.00001;
 invkrange = [invkstepsize,8];
 n = uint32(((invkrange(2) - invkrange(1)) / invkstepsize) + 1);
@@ -80,28 +80,33 @@ delta_I_A = (g_h + g_alpha) * mu^2 * r_alpha^2 * freq_h.^2 / freq_alpha^2;
 delta_I_B = (mu .* freq_h.^2 ./ freq_alpha.^2 .* ((g_h .* E_R) + E_I)) + (mu .* r_alpha.^2 .* (A_I + (g_alpha .* A_R)));
 delta_I_C = (A_I .* E_R) - (B_R .* D_I) + (A_R .* E_I) - (B_I .* D_R);
 
-X_R1 = (-delta_R_B + sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
-X_R2 = (-delta_R_B - sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
+X_R1 = (-delta_R_B - sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
+X_R2 = (-delta_R_B + sqrt(delta_R_B.^2 - (4 .* delta_R_A .* delta_R_C))) ./ (2 .* delta_R_A);
 
 if(~delta_I_A == 0)
-    X_I1 = (-delta_I_B + sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
-    X_I2 = (-delta_I_B - sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
+    X_I1 = (-delta_I_B - sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
+    X_I2 = (-delta_I_B + sqrt(delta_I_B.^2 - (4 .* delta_I_A .* delta_I_C))) ./ (2 .* delta_I_A);
 else
     X_I1 = -delta_I_C ./ delta_I_B;
     X_I2 = -delta_I_C ./ delta_I_B;
 end
+
+iscomplex = (imag(X_R1) ~= 0);
+X_R1(iscomplex) = NaN;
+iscomplex = (imag(X_R2) ~= 0);
+X_R2(iscomplex) = NaN;
 
 rt_X_R1 = sqrt(X_R1);
 rt_X_R2 = sqrt(X_R2);
 rt_X_I1 = sqrt(X_I1);
 rt_X_I2 = sqrt(X_I2);
 
-solutionmatrix = [k; k_inv; X_R1; X_R2; X_I1; rt_X_R1; rt_X_R2; rt_X_I1;];
-imagMatrix2 = [zeros(1,size(delta_I_B,2)); delta_I_B; delta_I_C];
-realMatrix2 = [zeros(1,size(delta_I_B,2)) + delta_R_A; delta_R_B; delta_R_C];
+solutionmatrix = [k; k_inv; X_R1; X_R2; X_I1; rt_X_R1; rt_X_R2; rt_X_I1; rt_X_I2];
 
 XRatio1 = abs(1 - abs(solutionmatrix(6,:) ./ solutionmatrix(8,:)));
 XRatio2 = abs(1 - abs(solutionmatrix(7,:) ./ solutionmatrix(8,:)));
+
+
 
 
 fig = figure();
@@ -113,13 +118,23 @@ xlabel("1/k");
 ylabel("sqrt(X)");
 %axis([-inf inf 0.6 1.3])
 
-
-[~,idx1] = find(XRatio2 == min(XRatio2,[],"omitnan"));
-flutterPoint = solutionmatrix(:,idx1);
-Uf = freq_alpha * b * flutterPoint(2) / flutterPoint(7);
-flutterFreq = freq_alpha / flutterPoint(7) / (2 * pi());
+[~,idx1] = find(XRatio1 == min(XRatio1,[],"omitnan"));
+[~,idx2] = find(XRatio2 == min(XRatio2,[],"omitnan"));
+r1 = XRatio1(:,idx1);
+r2 = XRatio2(:,idx2);
+if(r1 < r2)
+    flutterPoint = solutionmatrix(:,idx1);
+    flutter_rtX = flutterPoint(6);
+    Uf = freq_alpha * b * flutterPoint(2) / flutterPoint(6);
+    flutterFreq = freq_alpha / flutterPoint(6) / (2 * pi());
+else
+    flutterPoint = solutionmatrix(:,idx2);
+    flutter_rtX = flutterPoint(7);
+    Uf = freq_alpha * b * flutterPoint(2) / flutterPoint(7);
+    flutterFreq = freq_alpha / flutterPoint(7) / (2 * pi());
+end
 inv_kf = flutterPoint(2);
 kf = flutterPoint(1);
-flutter_rtX = flutterPoint(7);
+plot(inv_kf,flutter_rtX,"o",MarkerSize=12)
 
 fprintf("Uf = %g ft/s\nFcr = %g Hz\nkf = %g\nsqrt(Xf) = %g\n1/kf = %g\n",Uf,flutterFreq,kf,flutter_rtX,inv_kf)
