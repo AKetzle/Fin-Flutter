@@ -45,11 +45,12 @@ g_h = 0.00;
 % freq_alpha = 25;
 % mu = 20;
 
+kStepSize = 0.00001;
+kMax = 6;
 %% Calculation
 
 i = sqrt(-1);
-kStepSize = 0.00001;
-kRange = [kStepSize,6];
+kRange = [kStepSize,kMax];
 n = ((max(kRange) - min(kRange)) / kStepSize) + 1;
 kSet = linspace(kRange(2),kRange(1),n);
 

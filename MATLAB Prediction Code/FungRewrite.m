@@ -47,14 +47,14 @@ mu = 20;
 g_alpha = 0;
 g_h = 0;
 
+invkstepsize = 0.00001;
+invkMax = 8;
 %%
 i = sqrt(-1);
-invkstepsize = 0.00001;
-invkrange = [invkstepsize,8];
+invkrange = [invkstepsize,invkMax];
 n = uint32(((invkrange(2) - invkrange(1)) / invkstepsize) + 1);
 invk_set = linspace(invkrange(1),invkrange(2),n);
 k_set = 1 ./ invk_set;
-
 
 k = k_set;
 k_inv = invk_set;
@@ -106,18 +106,6 @@ solutionmatrix = [k; k_inv; X_R1; X_R2; X_I1; rt_X_R1; rt_X_R2; rt_X_I1; rt_X_I2
 XRatio1 = abs(1 - abs(solutionmatrix(6,:) ./ solutionmatrix(8,:)));
 XRatio2 = abs(1 - abs(solutionmatrix(7,:) ./ solutionmatrix(8,:)));
 
-
-
-
-fig = figure();
-hold on;
-invk = solutionmatrix(2,:);
-rt_X = solutionmatrix(6:8,:);
-plot(invk,rt_X)
-xlabel("1/k");
-ylabel("sqrt(X)");
-%axis([-inf inf 0.6 1.3])
-
 [~,idx1] = find(XRatio1 == min(XRatio1,[],"omitnan"));
 [~,idx2] = find(XRatio2 == min(XRatio2,[],"omitnan"));
 r1 = XRatio1(:,idx1);
@@ -135,6 +123,16 @@ else
 end
 inv_kf = flutterPoint(2);
 kf = flutterPoint(1);
-plot(inv_kf,flutter_rtX,"o",MarkerSize=12)
 
 fprintf("Uf = %g ft/s\nFcr = %g Hz\nkf = %g\nsqrt(Xf) = %g\n1/kf = %g\n",Uf,flutterFreq,kf,flutter_rtX,inv_kf)
+
+%% Plotting
+
+fig = figure();
+hold on;
+invk = solutionmatrix(2,:);
+rt_X = solutionmatrix(6:8,:);
+plot(invk,rt_X)
+xlabel("1/k");
+ylabel("sqrt(X)");
+plot(inv_kf,flutter_rtX,"o",MarkerSize=12);
