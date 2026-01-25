@@ -91,7 +91,7 @@ end
 
 %% 5 - Inverse K method - Based on NACA TR496, NACA TR685, and Y.C. Fung's Theory of Aeroelasticity
 
-function [Uf] = TR496TR685(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, invkstepsize,invkMax)
+function [Uf] = TR496TR685(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, invkstepsize, invkMax, g_h, g_alpha)
     %{
     Write Description Here
     %}
