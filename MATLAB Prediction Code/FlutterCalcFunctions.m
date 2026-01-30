@@ -93,7 +93,25 @@ end
 
 function [Uf] = TR496TR685(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, invkstepsize, invkMax, g_h, g_alpha)
     %{
-    Write Description Here
+    Calculates flutter velocity based on the sqrt(X) vs 1/k method.
+    Originally found in NACA TR496: https://ntrs.nasa.gov/citations/19930090935
+    again in NACA TR685: https://ntrs.nasa.gov/citations/19930091762
+    and also in Y.C. Fung's "An Introduction to the Theory of
+    Aeroelasticity"
+    Flutter condition is when the real and imaginary portions of sqrt(X)
+    plotted against 1/k cross
+
+    freq_alpha - Natural pitching (pure rotation about E.A.) frequency of fin, rad/s
+    freq_h - Natural plunge (pure bending about E.A.) frequency of fin, rad/s
+    a_h - location of elastic axis (E.A.) of fin behind mid-chord divided by semichord length, unitless
+    x_alpha - location of c.g. behind E.A. as ratio of semichord, unitless
+    r_alpha - reduced radius of gyration around E.A. divided by semichord, unitless
+    b - semichord length (half of length of fin), feet (can be other length unit, defines velocity as [unit(b)]/s)
+    mu - nondimensional mass ratio, unitless
+    g_h - plunge damping coefficient, unitless, typ 0.005 (per FinSim)
+    g_alpha - pitch damping coefficient, unitless, typ 0.005 (per FinSim)
+    invkstepsize - size of difference between discrete points of 1/k, unitless recommended between 0.0001 - 0.000001
+    invkMax - maximum value of 1/k to calculate to, unitless, typ 6-14, adjust higher if the parabola is not closed
     %}
     i = sqrt(-1);
     invkrange = [invkstepsize,invkMax];
@@ -172,7 +190,7 @@ end
 
 %% 6 - Simmons simplification of Kearns (@ John Hopkins) equation
 
-function [V_f] = SimmonsFlutter(x_bar, r_bar, freq_h, freq_alpha)
+function [V_f] = SimmonsFlutter(x_bar, r_bar, freq_h, freq_alpha, b, mu, Mach)
    
     % Only valid for supersonic flight based on supersonic lift assumptions
     % r_bar = radius of gyration wrt axis of rotation/elastic axis
@@ -185,7 +203,15 @@ end
 
 function [Uf, Ud] = UvsgNoDamp(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, kStepSize,kMax)
     %{
-    Write Description Here
+    freq_alpha - Natural pitching (pure rotation about E.A.) frequency of fin, rad/s
+    freq_h - Natural plunge (pure bending about E.A.) frequency of fin, rad/s
+    a_h - location of elastic axis (E.A.) of fin behind mid-chord divided by semichord length, unitless
+    x_alpha - location of c.g. behind E.A. as ratio of semichord, unitless
+    r_alpha - reduced radius of gyration around E.A. divided by semichord, unitless
+    b - semichord length (half of length of fin), feet (can be other length unit, defines velocity as [unit(b)]/s)
+    mu - nondimensional mass ratio, unitless
+    kstepsize - size of difference between discrete points of k, unitless recommended between 0.0001 - 0.000001
+    kMax - maximum value of k to calculate to, unitless, typ 6-14, adjust higher if the parabola is not closed
     %}
     i = sqrt(-1);
     kRange = [kStepSize,kMax];
