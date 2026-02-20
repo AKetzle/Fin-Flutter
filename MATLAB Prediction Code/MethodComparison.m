@@ -191,7 +191,7 @@ function [V_f] = TN4197(G_E, h, t, C_r, C_t, Theta_LE, p, p_0, a)
     AR = h^2 / finArea; % Fin aspect ratio, unitless
     lambda = C_t / C_r; % Fin taper ratio, unitless
     
-    V_f = a * sqrt(G_E / ( ((39.3 * AR^3) / ((t/C_r)^3 * (AR + 2))) * ((lambda + 1) / 2) * (p/p_0)));
+    V_f = a * sqrt(G_E / (((39.3 * AR^3) / ((t/C_r)^3 * (AR + 2))) * ((lambda + 1) / 2) * (p/p_0)));
 end
 
 function [Uf] = TR496TR685(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, invkstepsize, invkMax, g_h, g_alpha)
