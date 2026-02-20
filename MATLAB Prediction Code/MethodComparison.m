@@ -15,22 +15,23 @@ freq_h = 2458.08525; % rad/s
 mu = 77.11441;
 g_alpha = 0.00;
 g_h = 0.00;
-h = 4; % in
-t = 0.195; % in
-C_r = 12; % in
-C_t = 2.25; % in
+h = 4/12; % ft
+t = 0.195/12; % ft
+C_r = 12/12; % ft
+C_t = 2.25/12; % ft
 Theta_LE = 22.306; % degrees
 p_0 = 14.696; % psi
 p = p_0; % psf
 a = 1116.4; % ft/s
 G_E = 3759398.37; % psi
+gamma = 1.4;
 
 invkstepsize = 0.00001;
 invkMax = 14;
 kStepSize = 0.00001;
 kMax = 10;
 
-%% Difference calculation
+%% Flutter Speed Calculation
 
 V_f_TN4197 = TN4197(G_E,h,t,C_r,C_t,Theta_LE,p,p_0,a);
 M_TN = V_f_TN4197 / a;
@@ -44,62 +45,124 @@ V_f_ug_raw = UvsgNoDamp(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, kStepS
 M_i2 = V_f_ug_raw / a;
 M_c2 = real(sqrt(M_i2^2 * (sqrt(1 - (M_i2^4 / 4)) - (M_i2^2 / 2)))); % only keeping real portion
 V_f_ug_corr = a * M_c2; % may not be correct
-
-TN4197_diff = (V_f_TN4197_corr - V_f_TN4197) * 100 / V_f_TN4197;
-invk_raw_diff = (V_f_invk_raw - V_f_TN4197) * 100 / V_f_TN4197;
-invk_corr_diff = (V_f_invk_corr - V_f_TN4197) * 100 / V_f_TN4197;
-ug_raw_diff = (V_f_ug_raw - V_f_TN4197) * 100 / V_f_TN4197;
-ug_corr_diff = (V_f_ug_corr - V_f_TN4197) * 100 / V_f_TN4197;
+V_f_bennett_raw = BennetFlutter(C_r,C_t,Theta_LE,h,t,a,G_E,p,p_0,gamma);
+M_bi = V_f_bennett_raw / a;
+M_bc = real(sqrt(M_bi^2 * (sqrt(1 - (M_bi^4 / 4)) - (M_bi^2 / 2)))); % only keeping real portion
+V_f_bennett_corr = M_bc * a;
 
 % Simmons application
-
 V_f_simmons_TN = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_TN);
 V_f_simmons_TN_corr = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_TNc);
 V_f_simmons_invk_raw = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_i1);
 V_f_simmons_invk_corr = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_c1);
 V_f_simmons_ug_raw = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_i2);
 V_f_simmons_ug_corr = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_c2);
+V_f_simmons_bennett_raw = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_bi);
+V_f_simmons_bennett_corr = SimmonsFlutter(x_alpha, r_alpha, freq_h, freq_alpha, b, mu, M_bc);
 
+%% Difference Calculation
+
+% Direct Diff
+TN4197_corr_diff = (V_f_TN4197_corr - V_f_TN4197) * 100 / V_f_TN4197;
+simm_TN4197_diff = (V_f_simmons_TN_corr - V_f_TN4197) * 100 / V_f_TN4197;
 simm_TN4197_corr_diff = (V_f_simmons_TN_corr - V_f_TN4197) * 100 / V_f_TN4197;
+invk_raw_diff = (V_f_invk_raw - V_f_TN4197) * 100 / V_f_TN4197;
+invk_corr_diff = (V_f_invk_corr - V_f_TN4197) * 100 / V_f_TN4197;
 simm_invk_raw_diff = (V_f_simmons_invk_raw - V_f_TN4197) * 100 / V_f_TN4197;
 simm_invk_corr_diff = (V_f_simmons_invk_corr - V_f_TN4197) * 100 / V_f_TN4197;
+ug_raw_diff = (V_f_ug_raw - V_f_TN4197) * 100 / V_f_TN4197;
+ug_corr_diff = (V_f_ug_corr - V_f_TN4197) * 100 / V_f_TN4197;
 simm_ug_raw_diff = (V_f_simmons_ug_raw - V_f_TN4197) * 100 / V_f_TN4197;
 simm_ug_corr_diff = (V_f_simmons_ug_corr - V_f_TN4197) * 100 / V_f_TN4197;
+bennett_raw_diff = (V_f_bennett_raw - V_f_TN4197) * 100 / V_f_TN4197;
+bennett_corr_diff = (V_f_bennett_corr - V_f_TN4197) * 100 / V_f_TN4197;
+simm_bennett_raw_diff = (V_f_simmons_bennett_raw - V_f_TN4197) * 100 / V_f_TN4197;
+simm_bennett_corr_diff = (V_f_simmons_bennett_corr - V_f_TN4197) * 100 / V_f_TN4197;
+
+%Simmons Diff
+diff2_simm_TN4197_corr = (V_f_TN4197_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_TN4197_simm_corr = (V_f_simmons_TN_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_invk_raw = (V_f_invk_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_invk_corr = (V_f_invk_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_invk_simm_raw = (V_f_simmons_invk_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_invk_simm_corr = (V_f_simmons_invk_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_ug_raw = (V_f_ug_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_ug_corr = (V_f_ug_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_ug_simm_raw = (V_f_simmons_ug_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_ug_simm_corr = (V_f_simmons_ug_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_bennett_raw = (V_f_bennett_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_bennett_corr = (V_f_bennett_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_bennett_simm_raw = (V_f_simmons_bennett_raw - V_f_simmons_TN) * 100 / V_f_simmons_TN;
+diff2_simm_bennett_simm_corr = (V_f_simmons_bennett_corr - V_f_simmons_TN) * 100 / V_f_simmons_TN;
 
 %% Results Display
 
 fprintf("===TN4197===\n" + ...
-    "Direct:          %.1f ft/s\n" + ...
-    "Direct Simmons:  %.1f ft/s\n",V_f_TN4197,V_f_simmons_TN);
+    "Direct:              %.1f ft/s\n" + ...
+    "Direct Simmons:      %.1f ft/s\n",V_f_TN4197,V_f_simmons_TN);
 fprintf("" + ...
-    "Prandtl-Glauert: %.1f ft/s\n" + ...
-    "P-G Simmons:     %.1f ft/s\n",V_f_TN4197_corr,V_f_simmons_TN_corr);
+    "Prandtl-Glauert:     %.1f ft/s\n" + ...
+    "P-G Simmons:         %.1f ft/s\n",V_f_TN4197_corr,V_f_simmons_TN_corr);
 fprintf("===1/k===\n" + ...
-    "Direct:          %.1f ft/s\n" + ...
-    "Direct Simmons:  %.1f ft/s\n" + ...
-    "Prandtl-Glauert: %.1f ft/s\n" + ...
-    "P-G Simmons:     %.1f ft/s\n",V_f_ug_raw,V_f_simmons_ug_raw,V_f_ug_corr,V_f_simmons_ug_corr);
+    "Direct:              %.1f ft/s\n" + ...
+    "Direct Simmons:      %.1f ft/s\n" + ...
+    "Prandtl-Glauert:     %.1f ft/s\n" + ...
+    "P-G Simmons:         %.1f ft/s\n",V_f_ug_raw,V_f_simmons_ug_raw,V_f_ug_corr,V_f_simmons_ug_corr);
 fprintf("===U vs g===\n");
 fprintf( ...
-    "Direct:          %.1f ft/s\n" + ...
-    "Direct Simmons:  %.1f ft/s\n",V_f_ug_raw,V_f_simmons_ug_raw);
+    "Direct:              %.1f ft/s\n" + ...
+    "Direct Simmons:      %.1f ft/s\n",V_f_ug_raw,V_f_simmons_ug_raw);
 fprintf( ...
-    "Prandtl-Glauert: %.1f ft/s\n" + ...
-    "P-G Simmons:     %.1f ft/s\n",V_f_ug_corr,V_f_simmons_ug_corr);
+    "Prandtl-Glauert:     %.1f ft/s\n" + ...
+    "P-G Simmons:         %.1f ft/s\n",V_f_ug_corr,V_f_simmons_ug_corr);
+fprintf("===Bennett===\n");
+fprintf( ...
+    "Direct:              %.1f ft/s\n" + ...
+    "Direct Simmons:      %.1f ft/s\n",V_f_bennett_raw,V_f_simmons_bennett_raw);
+fprintf( ...
+    "Prandtl-Glauert:     %.1f ft/s\n" + ...
+    "P-G Simmons:         %.1f ft/s\n",V_f_bennett_corr,V_f_simmons_bennett_corr);
 fprintf("=====%% Difference from TN4197 Direct=====\n");
+fprintf( ...
+    "TN4197 Simmons:      %+.2f%%\n" + ...
+    "TN4197 P-G:          %+.2f%%\n" + ...
+    "TN4197 P-G Simmons:  %+.2f%%\n" + ...
+    "1/k Direct:          %+.2f%%\n" + ...
+    "1/k Direct Simmons:  %+.2f%%\n" + ...
+    "1/k P-G:             %+.2f%%\n" + ...
+    "1/k P-G Simmons:     %+.2f%%\n",simm_TN4197_diff,TN4197_corr_diff,simm_TN4197_corr_diff,invk_raw_diff,simm_invk_raw_diff,invk_corr_diff,simm_invk_corr_diff);
+fprintf( ...
+    "U vs. g Direct:      %+.2f%%\n" + ...
+    "U vs. g Simmons:     %+.2f%%\n",ug_raw_diff,simm_ug_raw_diff);
+fprintf( ...
+    "U vs. g P-G:         %+.2f%%\n" + ...
+    "U vs. g P-G Simmons: %+.2f%%\n",bennett_corr_diff,simm_bennett_corr_diff);
+fprintf( ...
+    "Bennett Direct:      %+.2f%%\n" + ...
+    "Bennett Simmons:     %+.2f%%\n",bennett_raw_diff,simm_bennett_raw_diff);
+fprintf( ...
+    "Bennett P-G:         %+.2f%%\n" + ...
+    "Bennett P-G Simmons: %+.2f%%\n",ug_corr_diff,simm_ug_corr_diff);
+fprintf("=====%% Difference from TN4197 Simmons=====\n");
 fprintf( ...
     "TN4197 P-G:          %+.2f%%\n" + ...
     "TN4197 P-G Simmons:  %+.2f%%\n" + ...
     "1/k Direct:          %+.2f%%\n" + ...
     "1/k Direct Simmons:  %+.2f%%\n" + ...
     "1/k P-G:             %+.2f%%\n" + ...
-    "1/k P-G Simmons:     %+.2f%%\n",TN4197_diff,simm_TN4197_corr_diff,invk_raw_diff,simm_invk_raw_diff,invk_corr_diff,simm_invk_corr_diff);
+    "1/k P-G Simmons:     %+.2f%%\n",diff2_simm_TN4197_corr,diff2_simm_TN4197_simm_corr,diff2_simm_invk_raw,diff2_simm_invk_simm_raw,diff2_simm_invk_corr,diff2_simm_invk_simm_corr);
 fprintf( ...
     "U vs. g Direct:      %+.2f%%\n" + ...
-    "U vs. g Simmons:     %+.2f%%\n",ug_raw_diff,simm_ug_raw_diff);
+    "U vs. g Simmons:     %+.2f%%\n",diff2_simm_ug_raw,diff2_simm_ug_simm_raw);
 fprintf( ...
     "U vs. g P-G:         %+.2f%%\n" + ...
-    "U vs. g P-G Simmons: %+.2f%%\n",ug_corr_diff,simm_ug_corr_diff)
+    "U vs. g P-G Simmons: %+.2f%%\n",diff2_simm_ug_corr,diff2_simm_ug_simm_corr);
+fprintf( ...
+    "Bennett Direct:      %+.2f%%\n" + ...
+    "Bennett Simmons:     %+.2f%%\n",diff2_simm_bennett_raw,diff2_simm_bennett_simm_raw);
+fprintf( ...
+    "Bennett P-G:         %+.2f%%\n" + ...
+    "Bennett P-G Simmons: %+.2f%%\n",diff2_simm_bennett_corr,diff2_simm_bennett_simm_corr);
 
 %% Function Definitions
 
@@ -294,4 +357,46 @@ function [V_f] = SimmonsFlutter(x_bar, r_bar, freq_h, freq_alpha, b, mu, Mach)
     % x_bar = distance of cg from elastic/axis/axis of rotation
     V_f = b * freq_alpha * sqrt((mu * r_bar^2 * sqrt(Mach^2 - 1) / (x_bar * b)) * (1 - (freq_h / freq_alpha)^2)^2 + (4 * (x_bar / r_bar)^2 * (freq_h / freq_alpha)^2));
 
+end
+
+function [V_f] = BennetFlutter(C_r,C_t,Theta_LE,h,t,a,G_E,p,p_0,gamma)
+    %{
+    Calculates Bending-Torsion Flutter Velocity for a trapezoidal fin based on Bennet's formula (and derivations)
+    uploaded to Richard Nakka's rocketry website (Dec 2023)
+    Link: https://www.nakka-rocketry.net/articles/Calculating_Fin_Flutter_Velocity_Bennett-12-23.pdf
+    Ultimately: V_f = a * sqrt(G_E / (((DN * AR^3) / ((t/C_r)^3 * (AR + 2))) * ((lambda + 1)/2) * (p/p_0)))
+    
+    Inputs:
+    C_r - Root Chord, Inches
+    C_t - Tip Chord, Inches
+    Theta_LE - Leading-Edge Sweep angle, Degrees
+    h - Fin Height, Inches
+    t - Fin Thickness, Inches
+    a - Speed of Sound in Fluid, Feet / Second
+    G_E - Shear Modulus, Pounds / Inches^2
+    p - Local Air Pressure, Pounds / Inches^2
+    p_0 - Sea Level Air Pressure, Pounds / Inches^2
+    Gamma - Ratio of Speciifc Heats of Fluid, Unitless
+
+    Outputs:
+    V_f - Flutter Velocity, Feet / Second
+
+    Shortcomings:
+    1) Does not account for mass of the fin
+    2) Does not account for air mass
+    3) *Assumes constant fin thickness
+    4) Only validated to Mach 1.5
+    5) Assumes motion is Bending-Torsion
+    6) Only directly accounts for shear stiffness
+    7) Does not account for position of fin C.G. along fin height
+    %}
+    
+    finArea = h * 0.5 * (C_r + C_t); % area of fin, inches^2
+    AR = h^2 / finArea; % Fin aspect ratio, unitless
+    lambda = C_t / C_r; % Fin taper ratio, unitless
+    sweepLength = tand(Theta_LE) * h; % length from root LE to tip LE
+    C_x = ((2 * C_t * sweepLength) + (C_t^2) + (sweepLength * C_r) + (C_t * C_r) + (C_r^2)) / (3 * (C_t + C_r)); % Centroid of fin, effectively center of mass location from elading edge, inches
+    epsilon = (C_x / C_r) - 0.25; % distance of fin center of mass behind fin quarter-chord line, unitless
+    DN = (24 * epsilon * gamma * p_0) / pi(); % "Denominator Constant", Pounds / Inches^2
+    V_f = a * sqrt(G_E / (((DN * AR^3) / ((t/C_r)^3 * (AR + 2))) * ((lambda + 1) / 2) * (p / p_0))); % Flutter Velocity, Feet / Second
 end
