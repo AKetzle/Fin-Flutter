@@ -1,4 +1,4 @@
-%% Comparison of TN4197 vs. 1/k and U vs. g methods
+%% Comparison of TN4197 vs. 1/k and U vs. g methods 2!
 % Alexander Ketzle
 clc, clear;
 
@@ -35,19 +35,19 @@ kMax = 10;
 
 V_f_TN4197 = TN4197(G_E,h,t,C_r,C_t,Theta_LE,p,p_0,a);
 M_TN = V_f_TN4197 / a;
-M_TNc = real(sqrt(M_TN^2 * (sqrt(1 - (M_TN^4 / 4) - (M_TN^2 / 2))))); % only keeping real portion
+M_TNc = M_TN * sqrt((M_TN^2 - sqrt(M_TN^4 - 4)) / 2);
 V_f_TN4197_corr = M_TNc * a;
 V_f_invk_raw = TR496TR685(freq_alpha,freq_h,a_h,x_alpha,r_alpha,b,mu,invkstepsize,invkMax,g_h,g_alpha);
 M_i1 = V_f_invk_raw / a;
-M_c1 = real(sqrt(M_i1^2 * (sqrt(1 - (M_i1^4 / 4) - (M_i1^2 / 2))))); % only keeping real portion
+M_c1 = M_i1 * sqrt((M_i1^2 - sqrt(M_i1^4 - 4)) / 2);
 V_f_invk_corr = a * M_c1; % may not be correct
 V_f_ug_raw = UvsgNoDamp(freq_alpha, freq_h, a_h, x_alpha, r_alpha, b, mu, kStepSize,kMax);
 M_i2 = V_f_ug_raw / a;
-M_c2 = real(sqrt(M_i2^2 * (sqrt(1 - (M_i2^4 / 4) - (M_i2^2 / 2))))); % only keeping real portion
+M_c2 = M_i2 * sqrt((M_i2^2 - sqrt(M_i2^4 - 4)) / 2);
 V_f_ug_corr = a * M_c2; % may not be correct
 V_f_bennett_raw = BennetFlutter(C_r,C_t,Theta_LE,h,t,a,G_E,p,p_0,gamma);
 M_bi = V_f_bennett_raw / a;
-M_bc = real(sqrt(M_bi^2 * (sqrt(1 - (M_bi^4 / 4) - (M_bi^2 / 2))))); % only keeping real portion
+M_bc = M_bi * sqrt((M_bi^2 - sqrt(M_bi^4 - 4)) / 2);
 V_f_bennett_corr = M_bc * a;
 
 % Simmons application
